@@ -1,0 +1,178 @@
+{
+  "n_test_matches": 7082,
+  "n_common_matches": 6228,
+  "main_table": [
+    {
+      "model": "Home-win prior (baseline)",
+      "log_loss": 1.0729,
+      "brier": 0.6492,
+      "rps": 0.2302,
+      "accuracy": 0.4379
+    },
+    {
+      "model": "Elo only",
+      "log_loss": 0.983,
+      "brier": 0.5859,
+      "rps": 0.1994,
+      "accuracy": 0.5289
+    },
+    {
+      "model": "Logistic regression",
+      "log_loss": 0.9806,
+      "brier": 0.5843,
+      "rps": 0.1987,
+      "accuracy": 0.5316
+    },
+    {
+      "model": "LightGBM",
+      "log_loss": 0.9805,
+      "brier": 0.5838,
+      "rps": 0.1984,
+      "accuracy": 0.5292
+    },
+    {
+      "model": "Market average",
+      "log_loss": 0.9655,
+      "brier": 0.574,
+      "rps": 0.194,
+      "accuracy": 0.5422
+    },
+    {
+      "model": "Pinnacle (opening)",
+      "log_loss": 0.9651,
+      "brier": 0.5738,
+      "rps": 0.1939,
+      "accuracy": 0.5414
+    },
+    {
+      "model": "Pinnacle (closing)",
+      "log_loss": 0.963,
+      "brier": 0.5725,
+      "rps": 0.1933,
+      "accuracy": 0.5454
+    }
+  ],
+  "all_test_matches_table": [
+    {
+      "model": "Home-win prior (baseline)",
+      "log_loss": 1.0732,
+      "brier": 0.6494,
+      "rps": 0.2303,
+      "accuracy": 0.4373
+    },
+    {
+      "model": "Elo only",
+      "log_loss": 0.9871,
+      "brier": 0.5886,
+      "rps": 0.2007,
+      "accuracy": 0.5246
+    },
+    {
+      "model": "Logistic regression",
+      "log_loss": 0.9834,
+      "brier": 0.5862,
+      "rps": 0.1996,
+      "accuracy": 0.5292
+    },
+    {
+      "model": "LightGBM",
+      "log_loss": 0.9841,
+      "brier": 0.5861,
+      "rps": 0.1995,
+      "accuracy": 0.527
+    },
+    {
+      "model": "Market average",
+      "log_loss": 0.9691,
+      "brier": 0.5763,
+      "rps": 0.1951,
+      "accuracy": 0.5402
+    }
+  ],
+  "bootstrap_log_loss_differences": {
+    "LightGBM - Pinnacle (closing)": {
+      "mean": 0.017481648886412578,
+      "ci95": [
+        0.013564813319431508,
+        0.021272783239974183
+      ]
+    },
+    "LightGBM - Pinnacle (opening)": {
+      "mean": 0.015390988530300322,
+      "ci95": [
+        0.011698131710953266,
+        0.019028454757949127
+      ]
+    },
+    "LightGBM - Market average": {
+      "mean": 0.014991354783144154,
+      "ci95": [
+        0.011322639908534486,
+        0.018564805199395018
+      ]
+    },
+    "Logistic regression - Pinnacle (closing)": {
+      "mean": 0.017608354446616754,
+      "ci95": [
+        0.013777618712037868,
+        0.021716995268996973
+      ]
+    },
+    "Logistic regression - Pinnacle (opening)": {
+      "mean": 0.015517694090504493,
+      "ci95": [
+        0.011911265004339824,
+        0.019440009024606898
+      ]
+    },
+    "Logistic regression - Market average": {
+      "mean": 0.015118060343348326,
+      "ci95": [
+        0.0114814171520631,
+        0.01904669116870072
+      ]
+    },
+    "Elo only - Pinnacle (closing)": {
+      "mean": 0.020006318535326743,
+      "ci95": [
+        0.015717733840299057,
+        0.024291008629276408
+      ]
+    },
+    "Elo only - Pinnacle (opening)": {
+      "mean": 0.017915658179214488,
+      "ci95": [
+        0.014040083958523908,
+        0.021902113113625252
+      ]
+    },
+    "Elo only - Market average": {
+      "mean": 0.01751602443205832,
+      "ci95": [
+        0.013674051121110638,
+        0.021436809989024662
+      ]
+    },
+    "LightGBM - Logistic regression": {
+      "mean": -0.00012670556020417194,
+      "ci95": [
+        -0.0026612895199162588,
+        0.002502757136393338
+      ]
+    }
+  },
+  "outcome_frequency": {
+    "H": 0.43786127167630057,
+    "D": 0.2524084778420039,
+    "A": 0.30973025048169556
+  },
+  "share_of_matches_where_draw_is_the_top_pick": {
+    "Home-win prior (baseline)": 0.0,
+    "Elo only": 0.0,
+    "Logistic regression": 0.0016056518946692357,
+    "LightGBM": 0.0006422607578676942,
+    "Market average": 0.001123956326268465,
+    "Pinnacle (opening)": 0.0016056518946692357,
+    "Pinnacle (closing)": 0.003371868978805395
+  }
+}

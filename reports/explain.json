@@ -1,0 +1,56 @@
+{
+  "shap": {
+    "top_features": {
+      "elo_diff": 0.6086,
+      "elo_home": 0.1557,
+      "elo_away": 0.1049,
+      "diff_form_sot_f": 0.0824,
+      "a_form_shots_a": 0.0654,
+      "diff_season_ppg": 0.0627,
+      "h_form_shots_f": 0.0534,
+      "diff_form_sot_a": 0.0467,
+      "h_form_shots_a": 0.0411,
+      "h_season_ppg": 0.0364,
+      "a_form_shots_f": 0.0242,
+      "h_venue_gf": 0.021
+    },
+    "share_by_group": {
+      "Elo ratings": 0.552,
+      "Recent form & season record": 0.422,
+      "Rest days": 0.012,
+      "League": 0.014
+    }
+  },
+  "home_advantage": {
+    "Bundesliga": {
+      "home_win": 0.446,
+      "away_win": 0.303,
+      "edge": 0.143,
+      "edge_2020_21": 0.108
+    },
+    "Premier League": {
+      "home_win": 0.456,
+      "away_win": 0.301,
+      "edge": 0.155,
+      "edge_2020_21": -0.024
+    },
+    "Ligue 1": {
+      "home_win": 0.445,
+      "away_win": 0.284,
+      "edge": 0.161,
+      "edge_2020_21": -0.003
+    },
+    "Serie A": {
+      "home_win": 0.443,
+      "away_win": 0.293,
+      "edge": 0.15,
+      "edge_2020_21": 0.071
+    },
+    "La Liga": {
+      "home_win": 0.467,
+      "away_win": 0.283,
+      "edge": 0.184,
+      "edge_2020_21": 0.118
+    }
+  }
+}
