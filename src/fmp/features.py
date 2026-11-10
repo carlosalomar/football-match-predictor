@@ -21,6 +21,7 @@ FORM_WINDOW = 5
 REST_CAP_DAYS = 21  # anything longer is an international / winter / summer break
 
 TEAM_STATS = ["points", "gf", "ga", "shots_f", "shots_a", "sot_f", "sot_a"]
+XG_STATS = ["xg_f", "xg_a", "xg_diff", "goals_minus_xg"]
 VENUE_STATS = ["points", "gf", "ga"]
 
 
@@ -34,6 +35,7 @@ def to_team_long(matches: pd.DataFrame) -> pd.DataFrame:
         shots_f=matches.home_shots, shots_a=matches.away_shots,
         sot_f=matches.home_shots_target, sot_a=matches.away_shots_target,
         points=pts_home,
+        xg_f=matches.get("home_xg"), xg_a=matches.get("away_xg"),
     )
     pts_away = np.select([matches.result == "A", matches.result == "D"], [3, 1], 0)
     away = matches[common].assign(
@@ -42,11 +44,18 @@ def to_team_long(matches: pd.DataFrame) -> pd.DataFrame:
         shots_f=matches.away_shots, shots_a=matches.home_shots,
         sot_f=matches.away_shots_target, sot_a=matches.home_shots_target,
         points=pts_away,
+        xg_f=matches.get("away_xg"), xg_a=matches.get("home_xg"),
     )
     long = pd.concat([home, away], ignore_index=True)
+    for c in ["xg_f", "xg_a"]:
+        if c not in long:
+            long[c] = np.nan
+    long["xg_diff"] = long["xg_f"] - long["xg_a"]
+    # Positive = scoring more than the chances deserve ("luck" that tends to regress).
+    long["goals_minus_xg"] = long["gf"] - long["xg_f"]
     # Unplayed fixtures (used by the demo) have no result: keep their stats missing.
     unplayed = long["match_id"].isin(matches.loc[matches.result.isna(), "match_id"])
-    long.loc[unplayed, ["points"] + TEAM_STATS[1:]] = np.nan
+    long.loc[unplayed, ["points"] + TEAM_STATS[1:] + XG_STATS] = np.nan
     return long.sort_values(["team", "date", "match_id"]).reset_index(drop=True)
 
 
@@ -60,7 +69,7 @@ def add_team_features(long: pd.DataFrame) -> pd.DataFrame:
     by_team = long.groupby("team", sort=False)
 
     # Recent form over all matches (home and away), last 5 league matches.
-    for col in TEAM_STATS:
+    for col in TEAM_STATS + XG_STATS:
         long[f"form_{col}"] = _lagged_rolling(by_team[col], FORM_WINDOW)
 
     # Venue-specific form: the home team's last 5 HOME matches, the away team's last 5 AWAY matches.
@@ -82,12 +91,13 @@ FEATURE_COLS_TEAM = (
     [f"form_{c}" for c in TEAM_STATS] + [f"venue_{c}" for c in VENUE_STATS]
     + ["season_ppg", "season_played"]
 )
+XG_COLS_TEAM = [f"form_{c}" for c in XG_STATS]
 
 
 def assemble_match_features(fixtures: pd.DataFrame, long_feats: pd.DataFrame,
                             elo: pd.DataFrame) -> pd.DataFrame:
     """One row per fixture: home features (h_*), away features (a_*), Elo and differences."""
-    cols = ["match_id", "team"] + FEATURE_COLS_TEAM + ["prev_date"]
+    cols = ["match_id", "team"] + FEATURE_COLS_TEAM + XG_COLS_TEAM + ["prev_date"]
     h = long_feats[cols].rename(columns={c: f"h_{c}" for c in cols if c != "match_id"})
     a = long_feats[cols].rename(columns={c: f"a_{c}" for c in cols if c != "match_id"})
     X = (fixtures[["match_id", "league", "season", "date", "home_team", "away_team"]]
@@ -103,16 +113,20 @@ def assemble_match_features(fixtures: pd.DataFrame, long_feats: pd.DataFrame,
     X["rest_diff"] = X["h_rest_days"] - X["a_rest_days"]
     for c in ["form_points", "form_gf", "form_ga", "form_sot_f", "form_sot_a", "season_ppg"]:
         X[f"diff_{c}"] = X[f"h_{c}"] - X[f"a_{c}"]
+    X["diff_form_xg_diff"] = X["h_form_xg_diff"] - X["a_form_xg_diff"]
     for code in LEAGUES:
         X[f"league_{code}"] = (X["league"] == code).astype(int)
     return X
 
 
-def model_feature_names() -> list[str]:
+def model_feature_names(with_xg: bool = False) -> list[str]:
     team = [f"{s}_{c}" for s in "ha" for c in FEATURE_COLS_TEAM + ["rest_days"]]
     diffs = ["rest_diff"] + [f"diff_{c}" for c in
                              ["form_points", "form_gf", "form_ga", "form_sot_f", "form_sot_a", "season_ppg"]]
-    return ["elo_home", "elo_away", "elo_diff"] + team + diffs + [f"league_{c}" for c in LEAGUES]
+    names = ["elo_home", "elo_away", "elo_diff"] + team + diffs + [f"league_{c}" for c in LEAGUES]
+    if with_xg:
+        names += [f"{s}_{c}" for s in "ha" for c in XG_COLS_TEAM] + ["diff_form_xg_diff"]
+    return names
 
 
 def build_feature_table(matches: pd.DataFrame, elo: pd.DataFrame) -> pd.DataFrame:

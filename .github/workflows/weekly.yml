@@ -1,0 +1,29 @@
+name: weekly-predictions
+# Before every round: refresh results, publish forecasts for the next fixtures and
+# score the forecasts of matches already played. The commit timestamp proves each
+# forecast was made before kick-off. If any download fails the job stops and
+# nothing is committed.
+on:
+  schedule:
+    - cron: "0 8 * * 2,5"   # Tuesday and Friday, 08:00 UTC
+  workflow_dispatch:         # run by hand
+jobs:
+  predict:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+      - run: pip install -r requirements.txt
+      - run: python update.py && python predict.py && python evaluate.py
+      - run: |
+          git config user.name "github-actions"
+          git config user.email "actions@github.com"
+          git add predictions/ results/ data/processed/matches.parquet
+          git commit -m "Weekly update $(date +%F)" || echo "No changes"
+          git push

@@ -23,6 +23,8 @@ ODDS_SETS = {
     "ps": [("PSH", "PSD", "PSA")],                       # Pinnacle, published ~days before
     "psc": [("PSCH", "PSCD", "PSCA")],                   # Pinnacle closing (kick-off)
     "avg": [("AvgH", "AvgD", "AvgA"), ("BbAvH", "BbAvD", "BbAvA")],  # market average
+    "avgc": [("AvgCH", "AvgCD", "AvgCA")],               # market average, closing
+    "bfec": [("BFECH", "BFECD", "BFECA")],               # Betfair Exchange, closing
 }
 
 # Team names are consistent within football-data.co.uk, except for a few spellings.
@@ -59,10 +61,15 @@ def _read_one(code: str, season: str) -> pd.DataFrame | None:
     return out
 
 
-def build_matches() -> pd.DataFrame:
-    frames = [f for code in LEAGUES for s in SEASONS if (f := _read_one(code, s)) is not None]
+def build_matches(seasons: list[str] = SEASONS) -> pd.DataFrame:
+    frames = [f for code in LEAGUES for s in seasons if (f := _read_one(code, s)) is not None]
     df = pd.concat(frames, ignore_index=True)
-    df = df[df["result"].isin(["H", "D", "A"])]
+    return finalize(df)
+
+
+def finalize(df: pd.DataFrame) -> pd.DataFrame:
+    """Type fixes, sanity checks and a stable match_id ordered by date."""
+    df = df[df["result"].isin(["H", "D", "A"])].copy()
     df["home_goals"] = df["home_goals"].astype(int)
     df["away_goals"] = df["away_goals"].astype(int)
     # Odds below 1.01 are data-entry errors; treat as missing.

@@ -15,7 +15,7 @@ import streamlit as st
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
-from src.fmp.config import LEAGUES, REPORTS_DIR  # noqa: E402
+from src.fmp.config import LEAGUES, REPORTS_DIR, ROOT as PROJECT_ROOT  # noqa: E402
 from src.fmp.explain import pretty  # noqa: E402
 from src.fmp.predict import Predictor  # noqa: E402
 
@@ -37,7 +37,8 @@ st.caption("Probabilistic forecasts (home win / draw / away win) for the big fiv
            f"built from public match data up to {P.last_date():%d %b %Y}. "
            "A machine-learning portfolio project, not betting advice.")
 
-tab_predict, tab_results, tab_ratings = st.tabs(["Predict a match", "How good is it?", "Elo table"])
+tab_predict, tab_next, tab_live, tab_results, tab_ratings = st.tabs(
+    ["Predict a match", "Next matchday", "Live track record", "How good is it?", "Elo table"])
 
 with tab_predict:
     c1, c2, c3, c4 = st.columns([1.2, 1.5, 1.5, 1])
@@ -125,3 +126,59 @@ with tab_ratings:
     r.index.name = "Team"
     r.insert(0, "Rank", range(1, len(r) + 1))
     st.dataframe(r, width="stretch", height=740)
+
+
+with tab_next:
+    pred_files = sorted((PROJECT_ROOT / "predictions").glob("*.csv"))
+    if not pred_files:
+        st.info("No live predictions published yet. A GitHub Action publishes them every Tuesday and Friday.")
+    else:
+        latest = pd.read_csv(pred_files[-1])
+        st.subheader(f"Forecasts published on {pred_files[-1].stem}")
+        st.caption("Generated automatically before kick-off by a frozen model "
+                   f"({latest.model_version.iloc[0]}) and committed to GitHub: the commit date proves "
+                   "when each forecast was made.")
+        show = latest.assign(league=latest.league.map(LEAGUES), match=latest.home_team + " vs " + latest.away_team)
+        st.dataframe(
+            show[["date", "time", "league", "match", "p_home", "p_draw", "p_away"]],
+            hide_index=True, width="stretch",
+            column_config={
+                "p_home": st.column_config.ProgressColumn("Home win", format="percent", min_value=0, max_value=1),
+                "p_draw": st.column_config.ProgressColumn("Draw", format="percent", min_value=0, max_value=1),
+                "p_away": st.column_config.ProgressColumn("Away win", format="percent", min_value=0, max_value=1),
+            })
+
+with tab_live:
+    live_dir = PROJECT_ROOT / "results" / "live"
+    if not (live_dir / "summary.json").exists():
+        st.info("The live track record starts once the first published forecasts have been played.")
+    else:
+        summary = json.loads((live_dir / "summary.json").read_text())
+        ll = summary["log_loss"]
+        st.subheader(f"Live log loss after {summary['matches_scored']} matches")
+        c1, c2, c3 = st.columns(3)
+        c1.metric("This model", f"{ll['model']:.4f}")
+        c2.metric("Market average, closing odds", f"{ll['market_average_closing']:.4f}",
+                  f"{ll['model'] - ll['market_average_closing']:+.4f} gap", delta_color="off")
+        c3.metric("Betfair Exchange, closing odds", f"{ll['betfair_exchange_closing']:.4f}",
+                  f"{ll['model'] - ll['betfair_exchange_closing']:+.4f} gap", delta_color="off")
+        cum = pd.read_csv(live_dir / "cumulative.csv")
+        fig = go.Figure()
+        for col, name, color in [("cum_model", "This model", "#2a78d6"),
+                                 ("cum_market_closing", "Market average (closing)", "#eb6834"),
+                                 ("cum_betfair_closing", "Betfair Exchange (closing)", "#1baf7a")]:
+            fig.add_scatter(x=cum.matchday_week, y=cum[col], name=name, mode="lines+markers",
+                            line=dict(color=color, width=2), marker=dict(size=8),
+                            hovertemplate=f"{name}<br>week of %{{x}}<br>cumulative log loss %{{y:.4f}}<extra></extra>")
+        fig.update_layout(height=380, margin=dict(l=10, r=10, t=10, b=10), yaxis_title="Cumulative log loss (lower is better)",
+                          xaxis_title="Week", xaxis_type="category", legend=dict(orientation="h", y=-0.25), hovermode="x unified")
+        st.plotly_chart(fig, width="stretch")
+        st.caption("Bookmakers are scored with their closing odds (the last price before kick-off), the hardest "
+                   "possible benchmark. Pinnacle odds are no longer published by football-data.co.uk, so the "
+                   "Betfair Exchange closing price is used as the sharp reference.")
+        played = pd.read_csv(live_dir / "matches.csv").sort_values("date", ascending=False)
+        st.dataframe(played[["date", "league", "home_team", "away_team", "result", "p_home", "p_draw", "p_away",
+                             "ll_model", "ll_odds_avgc", "ll_odds_bfec"]].rename(columns={
+                                 "ll_model": "log loss model", "ll_odds_avgc": "log loss market",
+                                 "ll_odds_bfec": "log loss Betfair"}),
+                     hide_index=True, width="stretch")
