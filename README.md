@@ -1,5 +1,7 @@
 # European Football Match Predictor
 
+[![Open in Streamlit](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://football-match-predictor-2opxqrtthqmcxdjaspvcpu.streamlit.app/)
+
 **How well can a machine-learning model predict football results in Europe's big five leagues, and how close does it get to the bookmakers?**
 
 This project forecasts the probability of a **home win, draw or away win** for every match in the Premier League, La Liga, Bundesliga, Serie A and Ligue 1, using only free public data. It then benchmarks those probabilities against the sharpest bookmaker in the market, Pinnacle, on four seasons the models never saw.
@@ -122,6 +124,8 @@ For each team, before each match:
 Full tables by league and by season: [`reports/results.md`](reports/results.md).
 
 ## Interactive demo
+
+**Live demo: [football-match-predictor-2opxqrtthqmcxdjaspvcpu.streamlit.app](https://football-match-predictor-2opxqrtthqmcxdjaspvcpu.streamlit.app/)**
 
 The Streamlit app lets you pick a league and two teams. It takes their **current** Elo and form from every league match played so far, shows the probabilities from the three models, and explains the LightGBM forecast with SHAP. It uses exactly the same feature code as training.
 
