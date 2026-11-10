@@ -6,6 +6,7 @@ import pandas as pd
 from .config import DATA_PROCESSED, MODELS_DIR
 from .elo import EloParams, run_elo
 from .features import build_feature_table
+from .xg_merge import attach_xg
 
 
 def load_elo_params() -> EloParams:
@@ -13,7 +14,7 @@ def load_elo_params() -> EloParams:
 
 
 def main():
-    matches = pd.read_parquet(DATA_PROCESSED / "matches.parquet")
+    matches = attach_xg(pd.read_parquet(DATA_PROCESSED / "matches.parquet"))
     elo, _ = run_elo(matches, load_elo_params())
     elo["match_id"] = matches["match_id"]
     feats = build_feature_table(matches, elo)

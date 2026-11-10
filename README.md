@@ -123,6 +123,18 @@ For each team, before each match:
 
 Full tables by league and by season: [`reports/results.md`](reports/results.md).
 
+## Live forecasts (season 2026/27)
+
+Backtests can always be questioned, so the model also forecasts real matches **before they are played**. Every Tuesday and Friday at 08:00 UTC a GitHub Action ([`weekly.yml`](.github/workflows/weekly.yml)):
+
+1. `update.py` downloads this season's results and rebuilds the match table, Elo ratings and form.
+2. `predict.py` reads the upcoming fixtures published by football-data.co.uk, computes each team's features as of today, and saves the forecasts to [`predictions/YYYY-MM-DD.csv`](predictions/). Only each team's **next** match is forecast, and a forecast is never rewritten once published.
+3. `evaluate.py` matches past forecasts with the real results and scores them against the bookmakers' **closing** odds (the last price before kick-off, the hardest benchmark). Results go to [`results/live/`](results/live/).
+
+The Action commits the files, so **the commit timestamp proves each forecast was made before kick-off**. The model is frozen for the whole season (trained once on 2008/09 to 2025/26 by `python -m src.fmp.train_live`), so the live record is a clean out-of-sample test. If any download fails or a team name is not recognised, the job stops and publishes nothing.
+
+Pinnacle odds are no longer in the football-data.co.uk files for 2026/27, so the live benchmarks are the **market-average closing odds** and the **Betfair Exchange closing odds** (an exchange price set by bettors, with a very small margin). The demo app shows the forecasts for the next round and the cumulative log loss against both, week by week.
+
 ## Interactive demo
 
 **Live demo: [football-match-predictor-2opxqrtthqmcxdjaspvcpu.streamlit.app](https://football-match-predictor-2opxqrtthqmcxdjaspvcpu.streamlit.app/)**
@@ -138,6 +150,8 @@ streamlit run app/streamlit_app.py
 ```bash
 pip install -r requirements.txt
 python run_pipeline.py        # download -> clean -> tune Elo -> features -> train -> evaluate -> explain (~2 min)
+python -m src.fmp.train_live  # once per season: the frozen model used for live forecasts
+python update.py && python predict.py && python evaluate.py   # what the GitHub Action runs
 pytest                        # leakage and train/serve consistency tests
 streamlit run app/streamlit_app.py
 ```
@@ -157,7 +171,12 @@ streamlit run app/streamlit_app.py
 │   ├── metrics.py              Log loss, Brier, RPS, paired bootstrap
 │   ├── evaluate.py             Results tables and calibration / gap charts
 │   ├── explain.py              SHAP, home advantage, Elo history charts
-│   └── predict.py              Forecast a new fixture (used by the app)
+│   ├── predict.py              Forecast a new fixture (used by the app)
+│   ├── live.py                 Live pipeline: update results, forecast fixtures, score them
+│   └── train_live.py           Train the frozen model for the live season
+├── update.py, predict.py, evaluate.py   Live pipeline entry points (run by GitHub Actions)
+├── predictions/                Published forecasts, one CSV per run
+├── results/live/               Live track record vs closing odds
 ├── tests/                      Leakage and train/serve consistency tests
 ├── reports/                    results.md, results.json, figures/
 ├── models/                     Trained models and tuned Elo parameters

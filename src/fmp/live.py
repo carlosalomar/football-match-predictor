@@ -80,7 +80,8 @@ def update() -> pd.DataFrame:
     n_after = (matches.season == CURRENT_SEASON_START).sum()
     if n_after < n_before:
         raise LiveDataError(f"Current season shrank from {n_before} to {n_after} matches")
-    matches.to_parquet(MATCHES_FILE, index=False)
+    if not matches.equals(old):  # avoid an empty "binary change" commit when nothing new was played
+        matches.to_parquet(MATCHES_FILE, index=False)
     print(f"Current season: {n_before} -> {n_after} played matches. Last match: {matches.date.max():%Y-%m-%d}")
     return matches
 
