@@ -6,3 +6,4 @@ __pycache__/
 data/raw/*.csv
 data/processed/features.parquet
 data/processed/test_predictions.parquet
+data/cache/
