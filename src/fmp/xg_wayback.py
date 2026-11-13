@@ -77,7 +77,12 @@ def main():
             cached = CACHE / f"{code}_{season}.parquet"
             got = pd.read_parquet(cached) if cached.exists() else None
             if got is None:
-                for ts in snapshots(slug, season)[:15]:
+                try:
+                    stamps = snapshots(slug, season)[:15]
+                except Exception as e:
+                    print(f"  {code} {season}: snapshot index failed: {e}", flush=True)
+                    stamps = []
+                for ts in stamps:
                     try:
                         html = _get(f"https://web.archive.org/web/{ts}id_/https://understat.com/league/{slug}/{season}")
                     except Exception as e:
