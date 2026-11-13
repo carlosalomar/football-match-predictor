@@ -19,6 +19,7 @@ from .config import DATA_PROCESSED, FIGURES_DIR, REPORTS_DIR, TEST_END, TEST_STA
 from .features import model_feature_names
 from .models import encode, implied_probabilities, lightgbm, logistic
 from .plotting import COLORS, INK, style
+from .xg_merge import covered_league_seasons
 
 XG_TRAIN_START = 2014
 
@@ -40,6 +41,9 @@ def fit_predict(train, valid, test, features):
 
 def main():
     feats = pd.read_parquet(DATA_PROCESSED / "features.parquet")
+    # Only league-seasons with xG, identical rows for both versions of every model.
+    have = covered_league_seasons()
+    feats = feats[[(lg, s) in have for lg, s in zip(feats.league, feats.season)]]
     train = feats[feats.season.between(XG_TRAIN_START, VALID_SEASON - 1)]
     valid = feats[feats.season == VALID_SEASON]
     test = feats[feats.season.between(TEST_START, TEST_END)].dropna(
@@ -59,7 +63,8 @@ def main():
         d, lo, hi = M.paired_bootstrap_diff(M.per_match_log_loss(preds[f"{model}, with xG"], y),
                                             M.per_match_log_loss(preds[f"{model}, without xG"], y))
         boot[model] = {"with_minus_without": d, "ci95": [lo, hi]}
-    out = {"train_seasons": f"{XG_TRAIN_START}/15-{VALID_SEASON - 1}/{VALID_SEASON % 100:02d} (+{VALID_SEASON}/22 refit)",
+    out = {"league_seasons_used": len(have),
+           "train_seasons": f"{XG_TRAIN_START}/15-{VALID_SEASON - 1}/{VALID_SEASON % 100:02d} (+{VALID_SEASON}/22 refit)",
            "n_train": len(train), "n_test": len(test),
            "table": table.round(4).to_dict(orient="records"), "bootstrap": boot}
     (REPORTS_DIR / "xg_comparison.json").write_text(json.dumps(out, indent=2))

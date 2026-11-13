@@ -123,6 +123,28 @@ For each team, before each match:
 
 Full tables by league and by season: [`reports/results.md`](reports/results.md).
 
+## Does expected goals (xG) help?
+
+Shots on target are a rough proxy for chance quality. **Expected goals (xG)** measure it directly, so the obvious question is whether xG-based form makes the forecasts better.
+
+**Data.** Match-level xG comes from [Understat](https://understat.com), which covers the big five leagues from 2014/15. Understat went offline in November 2026, so the history was rebuilt from **archived copies of its league pages on the Internet Archive** ([`src/fmp/xg_wayback.py`](src/fmp/xg_wayback.py)): every page captured after a season ended contains that season's full fixture list with xG. This recovered **47 of the 55 league-seasons from 2014/15 to 2024/25** (16,972 matches). The coverage of each league-season is listed in [`data/xg/wayback_coverage.csv`](data/xg/wayback_coverage.csv); for 2025/26 there is no usable archive yet. ([`src/fmp/xg_download.py`](src/fmp/xg_download.py) downloads the same data directly with `soccerdata` once Understat is back.)
+
+**Joining the two sources.** Team names differ ("Ath Madrid" vs "Atletico Madrid"), so [`data/xg/team_names.csv`](data/xg/team_names.csv) maps every football-data.co.uk name to its Understat name (drafted by fuzzy matching, then checked by hand). Matches are joined on league, season, home team and away team, and the join is checked: **every one of the 16,972 matches in the covered league-seasons finds its xG**, and the final scores agree in all but 2 (both results later awarded by the league).
+
+**New features** (all lagged with `shift(1)`, like the rest): xG for and against over the last 5 matches, recent xG difference, and goals minus xG over the last 5 matches (a team scoring far above its xG has probably been lucky and tends to regress).
+
+**A fair comparison.** xG only exists from 2014/15, so both versions of each model are trained on exactly the same matches (2014/15-2020/21, tuned on 2021/22) and tested on exactly the same 4,264 matches from 2022/23-2024/25. The only difference is the feature list ([`src/fmp/xg_compare.py`](src/fmp/xg_compare.py)).
+
+| Model | Log loss without xG | Log loss with xG | Difference (95% CI) |
+|---|---:|---:|---:|
+| Logistic regression | 0.9806 | **0.9794** | −0.0012 (−0.0022 to −0.0001) |
+| LightGBM | 0.9815 | 0.9813 | −0.0001 (−0.0022 to +0.0017) |
+| Pinnacle, closing odds | | 0.9638 | |
+
+![xG comparison](reports/figures/xg_comparison.png)
+
+**Result:** xG helps, but only a little. It cuts the logistic regression's gap to Pinnacle from 0.0169 to 0.0157, an improvement that is small but statistically clear, while LightGBM barely changes. Most of what xG knows about a team is already in its Elo rating and its shots on target. The live 2026/27 model does not use xG, because the current season's Understat data is not available.
+
 ## Live forecasts (season 2026/27)
 
 Backtests can always be questioned, so the model also forecasts real matches **before they are played**. Every Tuesday and Friday at 08:00 UTC a GitHub Action ([`weekly.yml`](.github/workflows/weekly.yml)):
@@ -173,7 +195,11 @@ streamlit run app/streamlit_app.py
 │   ├── explain.py              SHAP, home advantage, Elo history charts
 │   ├── predict.py              Forecast a new fixture (used by the app)
 │   ├── live.py                 Live pipeline: update results, forecast fixtures, score them
-│   └── train_live.py           Train the frozen model for the live season
+│   ├── train_live.py           Train the frozen model for the live season
+│   ├── xg_download.py          Understat xG via soccerdata
+│   ├── xg_wayback.py           Understat xG rebuilt from Internet Archive snapshots
+│   ├── xg_merge.py             Team-name mapping and join, with an orphan check
+│   └── xg_compare.py           Same models with and without xG, same matches
 ├── update.py, predict.py, evaluate.py   Live pipeline entry points (run by GitHub Actions)
 ├── predictions/                Published forecasts, one CSV per run
 ├── results/live/               Live track record vs closing odds
@@ -187,7 +213,6 @@ streamlit run app/streamlit_app.py
 
 - **League matches only.** Cup and European fixtures are missing, so "days of rest" understates fatigue for clubs playing midweek, and form ignores those matches.
 - **No team news.** Injuries, suspensions, line-ups and transfers are exactly the information bookmakers have and this model lacks. Squad market values (for example the Transfermarkt dataset) would be a natural next feature.
-- **Expected goals (xG).** football-data.co.uk only added xG columns in 2026/27; a longer xG history would likely be a better form signal than shots on target.
 - **Draws.** Like every football model, this one almost never makes a draw the single most likely outcome. A dedicated draw model, or a bivariate Poisson goals model (Dixon–Coles), would be an interesting comparison.
 
 ## License

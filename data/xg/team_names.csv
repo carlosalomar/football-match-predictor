@@ -1,0 +1,172 @@
+league,football_data,understat,how
+D1,Augsburg,Augsburg,exact
+D1,Bayern Munich,Bayern Munich,exact
+D1,Bielefeld,Arminia Bielefeld,manual
+D1,Bochum,Bochum,exact
+D1,Darmstadt,Darmstadt,exact
+D1,Dortmund,Borussia Dortmund,manual
+D1,Ein Frankfurt,Eintracht Frankfurt,manual
+D1,Elversberg,,not in xG data (seasons missing)
+D1,FC Koln,FC Cologne,manual
+D1,Fortuna Dusseldorf,Fortuna Duesseldorf,manual
+D1,Freiburg,Freiburg,exact
+D1,Greuther Furth,Greuther Fuerth,manual
+D1,Hamburg,Hamburger SV,manual
+D1,Hannover,Hannover 96,manual
+D1,Heidenheim,FC Heidenheim,manual
+D1,Hertha,Hertha Berlin,manual
+D1,Hoffenheim,Hoffenheim,exact
+D1,Holstein Kiel,Holstein Kiel,exact
+D1,Ingolstadt,Ingolstadt,exact
+D1,Leverkusen,Bayer Leverkusen,manual
+D1,M'gladbach,Borussia M.Gladbach,manual
+D1,Mainz,Mainz 05,manual
+D1,Nurnberg,Nuernberg,manual
+D1,Paderborn,Paderborn,exact
+D1,RB Leipzig,RasenBallsport Leipzig,manual
+D1,Schalke 04,Schalke 04,exact
+D1,St Pauli,St. Pauli,manual
+D1,Stuttgart,VfB Stuttgart,manual
+D1,Union Berlin,Union Berlin,exact
+D1,Werder Bremen,Werder Bremen,exact
+D1,Wolfsburg,Wolfsburg,exact
+E0,Arsenal,Arsenal,exact
+E0,Aston Villa,Aston Villa,exact
+E0,Bournemouth,Bournemouth,exact
+E0,Brentford,Brentford,exact
+E0,Brighton,Brighton,exact
+E0,Burnley,Burnley,exact
+E0,Cardiff,Cardiff,exact
+E0,Chelsea,Chelsea,exact
+E0,Coventry,,not in xG data (seasons missing)
+E0,Crystal Palace,Crystal Palace,exact
+E0,Everton,Everton,exact
+E0,Fulham,Fulham,exact
+E0,Huddersfield,Huddersfield,exact
+E0,Hull,Hull,exact
+E0,Ipswich,Ipswich,exact
+E0,Leeds,Leeds,exact
+E0,Leicester,Leicester,exact
+E0,Liverpool,Liverpool,exact
+E0,Luton,Luton,exact
+E0,Man City,Manchester City,manual
+E0,Man United,Manchester United,manual
+E0,Middlesbrough,Middlesbrough,exact
+E0,Newcastle,Newcastle United,manual
+E0,Norwich,Norwich,exact
+E0,Nott'm Forest,Nottingham Forest,manual
+E0,QPR,Queens Park Rangers,manual
+E0,Sheffield United,Sheffield United,exact
+E0,Southampton,Southampton,exact
+E0,Stoke,Stoke,exact
+E0,Sunderland,Sunderland,exact
+E0,Swansea,Swansea,exact
+E0,Tottenham,Tottenham,exact
+E0,Watford,Watford,exact
+E0,West Brom,West Bromwich Albion,manual
+E0,West Ham,West Ham,exact
+E0,Wolves,Wolverhampton Wanderers,manual
+F1,Ajaccio,Ajaccio,exact
+F1,Ajaccio GFCO,,not in xG data (seasons missing)
+F1,Amiens,Amiens,exact
+F1,Angers,Angers,exact
+F1,Auxerre,Auxerre,exact
+F1,Bastia,,not in xG data (seasons missing)
+F1,Bordeaux,Bordeaux,exact
+F1,Brest,Brest,exact
+F1,Caen,Caen,exact
+F1,Clermont,Clermont Foot,manual
+F1,Dijon,Dijon,exact
+F1,Evian Thonon Gaillard,,not in xG data (seasons missing)
+F1,Guingamp,Guingamp,exact
+F1,Le Havre,Le Havre,exact
+F1,Le Mans,,not in xG data (seasons missing)
+F1,Lens,Lens,exact
+F1,Lille,Lille,exact
+F1,Lorient,Lorient,exact
+F1,Lyon,Lyon,exact
+F1,Marseille,Marseille,exact
+F1,Metz,Metz,exact
+F1,Monaco,Monaco,exact
+F1,Montpellier,Montpellier,exact
+F1,Nancy,,not in xG data (seasons missing)
+F1,Nantes,Nantes,exact
+F1,Nice,Nice,exact
+F1,Nimes,Nimes,exact
+F1,Paris FC,,not in xG data (seasons missing)
+F1,Paris SG,Paris Saint Germain,manual
+F1,Reims,Reims,exact
+F1,Rennes,Rennes,exact
+F1,St Etienne,Saint-Etienne,manual
+F1,Strasbourg,Strasbourg,exact
+F1,Toulouse,Toulouse,exact
+F1,Troyes,Troyes,exact
+I1,Atalanta,Atalanta,exact
+I1,Benevento,Benevento,exact
+I1,Bologna,Bologna,exact
+I1,Brescia,Brescia,exact
+I1,Cagliari,Cagliari,exact
+I1,Carpi,Carpi,exact
+I1,Cesena,,not in xG data (seasons missing)
+I1,Chievo,Chievo,exact
+I1,Como,Como,exact
+I1,Cremonese,,not in xG data (seasons missing)
+I1,Crotone,Crotone,exact
+I1,Empoli,Empoli,exact
+I1,Fiorentina,Fiorentina,exact
+I1,Frosinone,Frosinone,exact
+I1,Genoa,Genoa,exact
+I1,Inter,Inter,exact
+I1,Juventus,Juventus,exact
+I1,Lazio,Lazio,exact
+I1,Lecce,Lecce,exact
+I1,Milan,AC Milan,manual
+I1,Monza,Monza,exact
+I1,Napoli,Napoli,exact
+I1,Palermo,Palermo,exact
+I1,Parma,Parma Calcio 1913,manual
+I1,Pescara,Pescara,exact
+I1,Pisa,,not in xG data (seasons missing)
+I1,Roma,Roma,exact
+I1,Salernitana,Salernitana,exact
+I1,Sampdoria,Sampdoria,exact
+I1,Sassuolo,Sassuolo,exact
+I1,Spal,SPAL 2013,manual
+I1,Spezia,Spezia,exact
+I1,Torino,Torino,exact
+I1,Udinese,Udinese,exact
+I1,Venezia,Venezia,exact
+I1,Verona,Verona,exact
+SP1,Alaves,Alaves,exact
+SP1,Almeria,Almeria,exact
+SP1,Ath Bilbao,Athletic Club,manual
+SP1,Ath Madrid,Atletico Madrid,manual
+SP1,Barcelona,Barcelona,exact
+SP1,Betis,Real Betis,manual
+SP1,Cadiz,Cadiz,exact
+SP1,Celta,Celta Vigo,manual
+SP1,Cordoba,Cordoba,exact
+SP1,Eibar,Eibar,exact
+SP1,Elche,Elche,exact
+SP1,Espanol,Espanyol,manual
+SP1,Getafe,Getafe,exact
+SP1,Girona,Girona,exact
+SP1,Granada,Granada,exact
+SP1,Huesca,SD Huesca,manual
+SP1,La Coruna,Deportivo La Coruna,manual
+SP1,Las Palmas,Las Palmas,exact
+SP1,Leganes,Leganes,exact
+SP1,Levante,Levante,exact
+SP1,Malaga,Malaga,exact
+SP1,Mallorca,Mallorca,exact
+SP1,Osasuna,Osasuna,exact
+SP1,Oviedo,,not in xG data (seasons missing)
+SP1,Real Madrid,Real Madrid,exact
+SP1,Santander,,not in xG data (seasons missing)
+SP1,Sevilla,Sevilla,exact
+SP1,Sociedad,Real Sociedad,manual
+SP1,Sp Gijon,Sporting Gijon,manual
+SP1,Valencia,Valencia,exact
+SP1,Valladolid,Real Valladolid,manual
+SP1,Vallecano,Rayo Vallecano,manual
+SP1,Villarreal,Villarreal,exact

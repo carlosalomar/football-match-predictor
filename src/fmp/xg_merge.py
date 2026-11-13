@@ -54,15 +54,29 @@ def attach_xg(matches: pd.DataFrame) -> pd.DataFrame:
     m["away_team_us"] = [to_us.get(k) for k in zip(m.league, m.away_team)]
     # A home/away pairing happens once per league season, so it is a unique key.
     out = m.merge(us, on=["league", "season", "home_team_us", "away_team_us"], how="left")
-    far = (out.kickoff.dt.normalize() - out.date).abs() > pd.Timedelta(days=2)
+    far = (out.kickoff.dt.normalize() - out.date).abs() > pd.Timedelta(days=30)  # rescheduled matches keep their xG
     out.loc[far, ["home_xg", "away_xg"]] = float("nan")
     return out.drop(columns=["home_team_us", "away_team_us", "kickoff"])
 
 
+def covered_league_seasons() -> set:
+    """League-seasons for which an xG source exists (Understat directly, or archived pages)."""
+    cov = ROOT / "data" / "xg" / "wayback_coverage.csv"
+    us = pd.read_parquet(XG_FILE)
+    have = set(zip(us.league, us.season))
+    if cov.exists():
+        c = pd.read_csv(cov)
+        have &= set(zip(c[c.matches_with_result > 0].league, c[c.matches_with_result > 0].season))
+    return have
+
+
 def report(matches: pd.DataFrame) -> pd.DataFrame:
-    recent = matches[matches.season >= FIRST_XG_SEASON]
+    """Every match of a covered league-season must have found its xG (no orphans)."""
+    have = covered_league_seasons()
+    recent = matches[[(lg, s) in have for lg, s in zip(matches.league, matches.season)]]
     missing = recent[recent.home_xg.isna()]
-    print(f"{len(recent) - len(missing):,} of {len(recent):,} matches since 2014/15 have xG")
+    print(f"{len(recent) - len(missing):,} of {len(recent):,} matches in the {len(have)} covered "
+          "league-seasons have xG")
     if len(missing):
         print(missing[["league", "season", "date", "home_team", "away_team"]].head(30).to_string())
     return missing

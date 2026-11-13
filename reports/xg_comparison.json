@@ -1,0 +1,59 @@
+{
+  "league_seasons_used": 47,
+  "train_seasons": "2014/15-2020/21 (+2021/22 refit)",
+  "n_train": 10882,
+  "n_test": 4264,
+  "table": [
+    {
+      "model": "Logistic regression, without xG",
+      "log_loss": 0.9806,
+      "brier": 0.5848,
+      "rps": 0.1983,
+      "accuracy": 0.5324
+    },
+    {
+      "model": "LightGBM, without xG",
+      "log_loss": 0.9815,
+      "brier": 0.5847,
+      "rps": 0.1981,
+      "accuracy": 0.5324
+    },
+    {
+      "model": "Logistic regression, with xG",
+      "log_loss": 0.9794,
+      "brier": 0.5839,
+      "rps": 0.1979,
+      "accuracy": 0.5321
+    },
+    {
+      "model": "LightGBM, with xG",
+      "log_loss": 0.9813,
+      "brier": 0.5842,
+      "rps": 0.198,
+      "accuracy": 0.5319
+    },
+    {
+      "model": "Pinnacle (closing)",
+      "log_loss": 0.9638,
+      "brier": 0.5732,
+      "rps": 0.193,
+      "accuracy": 0.5476
+    }
+  ],
+  "bootstrap": {
+    "Logistic regression": {
+      "with_minus_without": -0.001203049126468693,
+      "ci95": [
+        -0.002226933377008271,
+        -0.00012517707552756098
+      ]
+    },
+    "LightGBM": {
+      "with_minus_without": -0.00014565502980036388,
+      "ci95": [
+        -0.0021703107804468286,
+        0.001668496273013136
+      ]
+    }
+  }
+}

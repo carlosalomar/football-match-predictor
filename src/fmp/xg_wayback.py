@@ -65,8 +65,9 @@ CACHE = XG_DIR / "wayback"
 
 
 def _complete(df: pd.DataFrame | None) -> bool:
-    # Every fixture of the season played (Ligue 1 2019/20 stopped at 279 matches: also complete).
-    return df is not None and len(df) >= 270 and df.is_result.all()
+    # Snapshots are taken after the season ended, so the season is over. Accept it if at least
+    # 270 matches have a result (Ligue 1 2019/20 was stopped by Covid after 279).
+    return df is not None and df.is_result.sum() >= 270 and (df.is_result.all() or df.is_result.sum() < 300)
 
 
 def main():
