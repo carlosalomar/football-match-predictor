@@ -61,18 +61,34 @@ def parse(html: str, code: str, season: int) -> pd.DataFrame | None:
     } for d in data])
 
 
+CACHE = XG_DIR / "wayback"
+
+
+def _complete(df: pd.DataFrame | None) -> bool:
+    # Every fixture of the season played (Ligue 1 2019/20 stopped at 279 matches: also complete).
+    return df is not None and len(df) >= 270 and df.is_result.all()
+
+
 def main():
+    CACHE.mkdir(parents=True, exist_ok=True)
     frames, coverage = [], []
     for slug, code in SLUGS.items():
         for season in SEASONS:
-            got = None
-            for ts in snapshots(slug, season)[:6]:
-                html = _get(f"https://web.archive.org/web/{ts}id_/https://understat.com/league/{slug}/{season}")
-                df = parse(html.decode("utf-8", "replace"), code, season)
-                time.sleep(1.5)
-                if df is not None and df.is_result.sum() >= 300:
-                    got = df.assign(source_snapshot=ts)
-                    break
+            cached = CACHE / f"{code}_{season}.parquet"
+            got = pd.read_parquet(cached) if cached.exists() else None
+            if got is None:
+                for ts in snapshots(slug, season)[:15]:
+                    try:
+                        html = _get(f"https://web.archive.org/web/{ts}id_/https://understat.com/league/{slug}/{season}")
+                    except Exception as e:
+                        print(f"  {code} {season} {ts}: {e}", flush=True)
+                        continue
+                    df = parse(html.decode("utf-8", "replace"), code, season)
+                    time.sleep(1.5)
+                    if _complete(df):
+                        got = df.assign(source_snapshot=ts)
+                        got.to_parquet(cached, index=False)  # resume point if the job is interrupted
+                        break
             n = 0 if got is None else int(got.is_result.sum())
             coverage.append({"league": code, "season": season, "matches_with_result": n,
                              "snapshot": None if got is None else got.source_snapshot.iloc[0]})
