@@ -1,0 +1,23 @@
+name: fetch-xg-wayback
+# Manual job: rebuild the Understat xG history from Internet Archive snapshots.
+on:
+  workflow_dispatch:
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: pip install pandas pyarrow
+      - run: python -m src.fmp.xg_wayback
+      - run: |
+          git config user.name "github-actions"
+          git config user.email "actions@github.com"
+          git add data/xg/
+          git commit -m "Rebuild Understat xG from Internet Archive snapshots" || echo "No changes"
+          git push
