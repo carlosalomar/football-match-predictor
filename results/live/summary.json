@@ -1,0 +1,9 @@
+{
+  "matches_scored": 48,
+  "log_loss": {
+    "model": 0.9985508381325067,
+    "market_average_closing": 0.9925575809822232,
+    "betfair_exchange_closing": 0.9971658360129717
+  },
+  "updated_at": "2026-11-24T19:27:59Z"
+}
